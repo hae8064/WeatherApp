@@ -1,33 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
+import 'package:weatherapp/model/model.dart';
+import 'package:weatherapp/screens/loading.dart';
 
 class WeatherScreen extends StatefulWidget {
-  WeatherScreen({this.parseWeatherData});
+  WeatherScreen({this.parseWeatherData, this.parseAirPollution});
   final parseWeatherData; //타입은 dynamic타입인데 생략 가능
+  final dynamic parseAirPollution;
 
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  //대기질 상태를 보여주는 이미지 아이콘 출력용도 변수
+  Widget? airIcon;
+  Widget? airState;
+
+  //미세먼지, 초미세먼지 수치
+  double? dust1;
+  double? dust2;
+
   late String cityName;
   late int temp;
+  Widget? icon;
+  String? des;
+  Model model = Model();
+
   var date = DateTime.now();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    updateData(widget.parseWeatherData);
+    updateData(widget.parseWeatherData, widget.parseAirPollution);
   }
 
-  void updateData(dynamic weatherData) {
+  void updateData(dynamic weatherData, dynamic airData) {
     double temp2 = weatherData['main']['temp']; //기본적인 기온은 화씨온도로 나타내짐
+    int condition = weatherData['weather'][0]['id'];
+    int index = airData['list'][0]['main']['aqi'];
     temp = temp2.round(); //반올림
     cityName = weatherData['name'];
+    icon = model.getWeatherIcon(condition)!;
+    des = weatherData['weather'][0]['description']!;
+    airIcon = model.getAirIcon(index);
+    airState = model.getAirCondition(index);
+    dust1 = airData['list'][0]['components']['pm10'];
+    dust2 = airData['list'][0]['components']['pm2_5'];
 
     print(temp);
     print(cityName);
@@ -48,7 +72,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
         //`title: Text(""),
         leading: IconButton(
           icon: Icon(Icons.near_me),
-          onPressed: () {},
+          onPressed: () {
+            // Future<Position> getCurrentLocation() async {
+            //   Position position = await Geolocator.getCurrentPosition(
+            //       desiredAccuracy: LocationAccuracy.high);
+            //   return position;
+            // }
+          },
           iconSize: 30.0,
         ),
         actions: [
@@ -87,7 +117,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               height: 150,
                             ),
                             Text(
-                              'Seoul',
+                              '$cityName',
                               style: GoogleFonts.lato(
                                 fontSize: 35,
                                 fontWeight: FontWeight.bold,
@@ -133,7 +163,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '18\u2103',
+                              '$temp\u2103',
                               style: GoogleFonts.lato(
                                 fontSize: 85,
                                 fontWeight: FontWeight.w300,
@@ -142,12 +172,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             ),
                             Row(
                               children: [
-                                SvgPicture.asset('svg/climacon-sun.svg'),
+                                icon!,
                                 SizedBox(
                                   width: 10.0,
                                 ),
                                 Text(
-                                  'clear sky',
+                                  '$des',
                                   style: GoogleFonts.lato(
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.w300,
@@ -184,22 +214,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               SizedBox(
                                 height: 10.0,
                               ),
-                              Image.asset(
-                                'image/bad.png',
-                                width: 37.0,
-                                height: 35.0,
-                              ),
+                              airIcon!,
                               SizedBox(
                                 height: 10.0,
                               ),
-                              Text(
-                                '매우나쁨',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
+                              airState!,
                             ],
                           ),
                           Column(
@@ -216,7 +235,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 height: 10.0,
                               ),
                               Text(
-                                '174.74',
+                                '$dust1',
                                 style: GoogleFonts.lato(
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold,
@@ -250,7 +269,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 height: 10.0,
                               ),
                               Text(
-                                '84.03',
+                                '$dust2',
                                 style: GoogleFonts.lato(
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold,
