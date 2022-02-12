@@ -5,7 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:weatherapp/model/model.dart';
+import 'package:weatherapp/screens/home.dart';
 import 'package:weatherapp/screens/loading.dart';
+import 'package:get/get.dart';
+import 'package:weatherapp/screens/todoPlan.dart';
 
 class WeatherScreen extends StatefulWidget {
   WeatherScreen({this.parseWeatherData, this.parseAirPollution});
@@ -32,6 +35,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Model model = Model();
 
   var date = DateTime.now();
+
+  int _selectedIndex = 0; //BottomNavigation인덱스
+
+  static List<Widget> _widgetOptions = <Widget>[
+    WeatherScreen(),
+    Home(), // class 호출
+    TodoPlan(),
+  ];
 
   @override
   void initState() {
@@ -78,6 +89,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
             //       desiredAccuracy: LocationAccuracy.high);
             //   return position;
             // }
+
+            // setState(() {
+            //   updateData(widget.parseWeatherData, widget.parseAirPollution);
+            // });
           },
           iconSize: 30.0,
         ),
@@ -101,94 +116,94 @@ class _WeatherScreenState extends State<WeatherScreen> {
               height: double.infinity,
             ),
             Container(
-              padding: EdgeInsets.all(20.0),
+              // padding: EdgeInsets.all(20.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 150,
-                            ),
-                            Text(
-                              '$cityName',
-                              style: GoogleFonts.lato(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                    child: Container(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$cityName',
+                                style: GoogleFonts.lato(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            Row(
-                              children: [
-                                TimerBuilder.periodic(
-                                  (Duration(minutes: 1)),
-                                  builder: (context) {
-                                    print('${getSystemTime()}');
-                                    return Text(
-                                      '${getSystemTime()}',
-                                      style: GoogleFonts.lato(
-                                        fontSize: 16.0,
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  },
-                                ),
-                                Text(
-                                  //요일
-                                  DateFormat(' - EEEE').format(date),
-                                  style: GoogleFonts.lato(
-                                    fontSize: 16.0,
-                                    color: Colors.white,
+                              Row(
+                                children: [
+                                  TimerBuilder.periodic(
+                                    (Duration(minutes: 1)),
+                                    builder: (context) {
+                                      print('${getSystemTime()}');
+                                      return Text(
+                                        '${getSystemTime()}',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 16.0,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ),
-                                Text(
-                                  //날짜
-                                  DateFormat('  d MMM, yyy').format(date),
-                                  style: GoogleFonts.lato(
-                                    fontSize: 16.0,
-                                    color: Colors.white,
+                                  Text(
+                                    //요일
+                                    DateFormat(' - EEEE').format(date),
+                                    style: GoogleFonts.lato(
+                                      fontSize: 16.0,
+                                      color: Colors.white,
+                                    ),
                                   ),
+                                  Text(
+                                    //날짜
+                                    DateFormat('  d MMM, yyy').format(date),
+                                    style: GoogleFonts.lato(
+                                      fontSize: 16.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$temp\u2103',
+                                style: GoogleFonts.lato(
+                                  fontSize: 85,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.white,
                                 ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$temp\u2103',
-                              style: GoogleFonts.lato(
-                                fontSize: 85,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
                               ),
-                            ),
-                            Row(
-                              children: [
-                                icon!,
-                                SizedBox(
-                                  width: 10.0,
-                                ),
-                                Text(
-                                  '$des',
-                                  style: GoogleFonts.lato(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.white,
+                              Row(
+                                children: [
+                                  icon!,
+                                  SizedBox(
+                                    width: 10.0,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                                  Text(
+                                    '$des',
+                                    style: GoogleFonts.lato(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Column(
@@ -198,104 +213,153 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         thickness: 2.0,
                         color: Colors.white30,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'AQI (대기질지수)',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
+                      Container(
+                        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'AQI (대기질지수)',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              airIcon!,
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              airState!,
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                '미세먼지',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
+                                SizedBox(
+                                  height: 10.0,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                '$dust1',
-                                style: GoogleFonts.lato(
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                airIcon!,
+                                SizedBox(
+                                  height: 10.0,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                'ug/m3',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
+                                airState!,
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '미세먼지',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                '초미세먼지',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
+                                SizedBox(
+                                  height: 10.0,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                '$dust2',
-                                style: GoogleFonts.lato(
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                Text(
+                                  '$dust1',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                'ug/m3',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
+                                SizedBox(
+                                  height: 10.0,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
+                                Text(
+                                  'ug/m3',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '초미세먼지',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Text(
+                                  '$dust2',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Text(
+                                  'ug/m3',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5.0,
+                      ),
                     ],
                   ),
+                  BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    backgroundColor: Colors.grey,
+                    selectedItemColor: Colors.white,
+                    unselectedItemColor: Colors.white.withOpacity(.60),
+                    selectedFontSize: 14,
+                    unselectedFontSize: 14,
+                    currentIndex: _selectedIndex, //현재 선택된 Index
+                    onTap: (int index) {
+                      setState(() {
+                        _selectedIndex = index;
+
+                        // if (_selectedIndex == 0) {
+                        //   Get.to(() => WeatherScreen());
+                        // } else if (_selectedIndex == 1) {
+                        //   Get.to(() => Home());
+                        // } else {
+                        //   Get.to(() => TodoPlan());
+                        // }
+                      });
+                    },
+                    items: const <BottomNavigationBarItem>[
+                      //index 0
+                      BottomNavigationBarItem(
+                        title: Text('Weather'),
+                        icon: Icon(Icons.filter_drama),
+                      ),
+                      //index 1
+                      BottomNavigationBarItem(
+                        title: Text('Home'),
+                        icon: Icon(
+                          Icons.home,
+                        ),
+                      ),
+                      //index 2
+                      BottomNavigationBarItem(
+                        title: Text('Todo'),
+                        icon: Icon(
+                          Icons.create,
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
