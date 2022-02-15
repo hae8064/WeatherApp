@@ -10,6 +10,7 @@ import 'package:weatherapp/screens/loading.dart';
 import 'package:get/get.dart';
 import 'package:weatherapp/screens/todoPlan.dart';
 
+//스크린 구성: BottomNavigationBar를 통한 페이지 이동과 날씨와 TodoList추가 
 class WeatherScreen extends StatefulWidget {
   WeatherScreen({this.parseWeatherData, this.parseAirPollution});
   final parseWeatherData; //타입은 dynamic타입인데 생략 가능
